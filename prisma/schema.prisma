@@ -1,0 +1,69 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String    @id @default(uuid()) @db.Uuid
+  email     String    @unique
+  name      String
+  password  String
+  healthId  String    @unique
+  createdAt DateTime  @default(now())
+  profiles  Profile[]
+  reports   Report[]
+}
+
+model Profile {
+  id        String   @id @default(uuid()) @db.Uuid
+  userId    String   @db.Uuid
+  healthId  String?  @unique
+  name      String
+  relation  String
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  reports   Report[]
+  shareLinks ShareLink[]
+
+  @@index([userId, createdAt])
+}
+
+model Report {
+  id            String   @id @default(uuid()) @db.Uuid
+  userId        String?  @db.Uuid
+  profileId     String?  @db.Uuid
+  fileName      String
+  fileType      String
+  sourceType    String
+  reportType    String
+  reportDate    String
+  patientName   String
+  labName       String
+  healthCard    Json
+  analysis      Json
+  summary       String
+  abnormalCount Int
+  createdAt     DateTime @default(now())
+  user          User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  profile       Profile? @relation(fields: [profileId], references: [id], onDelete: SetNull)
+
+  @@index([userId, createdAt])
+  @@index([profileId, createdAt])
+}
+
+model ShareLink {
+  id        String    @id @default(uuid()) @db.Uuid
+  token     String    @unique
+  profileId String    @db.Uuid
+  createdAt DateTime  @default(now())
+  expiresAt DateTime
+  revokedAt DateTime?
+  profile   Profile   @relation(fields: [profileId], references: [id], onDelete: Cascade)
+
+  @@index([profileId, createdAt])
+  @@index([token, expiresAt])
+}

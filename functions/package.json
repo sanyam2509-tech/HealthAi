@@ -1,0 +1,20 @@
+{
+  "name": "healthvault-ai-functions",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": "20"
+  },
+  "main": "index.js",
+  "scripts": {
+    "serve": "firebase emulators:start --only functions",
+    "deploy": "firebase deploy --only functions",
+    "lint": "echo 'No function lint configured yet'"
+  },
+  "dependencies": {
+    "@google/genai": "^1.17.0",
+    "firebase-admin": "^12.7.0",
+    "firebase-functions": "^6.1.0",
+    "zod": "^3.24.2"
+  }
+}
