@@ -1,172 +1,105 @@
-# HealthVault AI React
+# HealthVault AI
 
-HealthVault AI React is a production-style React application that helps users store medical reports, understand them in simple language, and manage report history across family profiles.
-Video demo : https://drive.google.com/file/d/1UZj9mOtcpI2tLZfRnCrRIkIWg1TBLJU0/view?usp=sharing
+AI-powered health report management for individuals and families.
 
-## Problem Statement
+HealthVault AI is a full-stack React application that helps users organize medical reports, maintain family profiles, and turn complex reports into structured, plain-language explanations using Google Gemini.
 
-Patients and families often receive lab reports as PDFs, images, or forwarded files. The documents get scattered, the wording is difficult to understand, and comparing old and new reports during follow-up visits becomes frustrating.
+## Why I built it
 
-HealthVault AI React solves this by giving users:
+Medical reports are often scattered across PDFs, images, chats, and devices. This project explores how an AI-assisted product can make report history easier to organize and understand while keeping the underlying data structured and shareable.
 
-- One authenticated place to store report history
-- Separate family profiles inside one account
-- AI-generated plain-language explanations of reports
-- Saved report history for each profile
+## Key features
+
+- Email/password and Google authentication
+- Family profiles within a single account
+- PDF and image report uploads
+- Gemini-powered report analysis
+- Persistent report history per profile
 - Read-only sharing links for doctors or caregivers
+- Protected routes and Firebase security rules
+- Structured validation with Zod
 
-## Users
-
-- Patients who want to understand their own reports faster
-- Families managing reports for parents, spouses, or children
-- People preparing for doctor visits with past report history
-
-## Why It Matters
-
-- Medical reports are often confusing for non-medical users
-- Families lose time searching across chats, downloads, and devices
-- Follow-up care is harder when report history is not organized
-
-## Core Features
-
-- Email/password and Google authentication with Firebase Auth
-- Protected routes with React Router
-- Family profile management with create, read, update, and delete
-- PDF and image report upload
-- Gemini-powered report analysis through Firebase Cloud Functions
-- Persistent report history in Firestore
-- Report detail pages with structured AI explanations
-- Read-only share links for profile access
-- Firebase Storage support for uploaded files
-
-## React Concepts Demonstrated
-
-- Functional components
-- Props and component composition
-- State management with `useState`
-- Side effects with `useEffect`
-- Conditional rendering
-- Lists and keys
-- Lifting state up
-- Controlled components
-- Routing with `react-router-dom`
-- Global state with Context API
-- `useMemo` and `useCallback`
-- Lazy backend integration through service modules
-
-## Tech Stack
-
-- React 18
-- Vite
-- TypeScript
-- React Router
-- Tailwind CSS
-- Firebase Auth
-- Cloud Firestore
-- Firebase Storage
-- Firebase Cloud Functions
-- Google Gemini API
-- Zod
-
-## Project Structure
+## Architecture
 
 ```text
-HealthAI-react/
-├── functions/
-├── src/
-│   ├── components/
-│   ├── context/
-│   ├── lib/
-│   ├── pages/
-│   ├── services/
-│   └── styles/
-├── firestore.rules
-├── storage.rules
-├── firebase.json
-└── README.md
+React + TypeScript + Vite
+        │
+        ├── Firebase Auth
+        ├── Firestore ─────── User / Profile / Report metadata
+        ├── Storage ───────── Report files
+        │
+        └── Cloud Function
+                │
+                └── Gemini API
+                      ↓
+             Structured AI explanation
 ```
 
-## CRUD Coverage
+## Tech stack
 
-- Profiles: Create, Read, Update, Delete
-- Reports: Create, Read, Delete
-- Share links: Create, Read
+**Frontend:** React 18, TypeScript, Vite, React Router, Tailwind CSS
 
-## Backend and Persistence
+**Backend / Cloud:** Firebase Cloud Functions, Firestore, Firebase Storage
 
-- User accounts are handled by Firebase Authentication
-- User, profile, report, and share-link metadata are stored in Firestore
-- Uploaded report files are stored in Firebase Storage
-- AI analysis runs through a Firebase Cloud Function using Gemini
+**AI:** Google Gemini API
 
-## Environment Variables
+**Validation / tooling:** Zod, ESLint
 
-Create a local `.env` file in the project root.
+## Engineering highlights
 
-```env
-VITE_FIREBASE_API_KEY=""
-VITE_FIREBASE_AUTH_DOMAIN=""
-VITE_FIREBASE_PROJECT_ID=""
-VITE_FIREBASE_STORAGE_BUCKET=""
-VITE_FIREBASE_MESSAGING_SENDER_ID=""
-VITE_FIREBASE_APP_ID=""
-VITE_ANALYZE_ENDPOINT=""
+- Separated UI, state, service, and backend concerns instead of putting API logic directly in components.
+- Used Cloud Functions as the server-side boundary for Gemini calls.
+- Persisted report and family-profile state in Firestore.
+- Used protected routes and Firebase rules for access control.
+- Used structured validation with Zod.
+- Designed AI responses around report-specific structured explanations rather than raw model text.
+
+## Project structure
+
+```text
+functions/
+src/
+├── components/
+├── context/
+├── lib/
+├── pages/
+├── services/
+└── styles/
+firestore.rules
+storage.rules
+firebase.json
 ```
 
-## Local Setup
-
-1. Install frontend dependencies
+## Run locally
 
 ```bash
 npm install
-```
-
-2. Install function dependencies
-
-```bash
-cd functions
-npm install
-cd ..
-```
-
-3. Add Firebase environment values to `.env`
-
-4. Start the frontend
-
-```bash
+cd functions && npm install && cd ..
 npm run dev
 ```
 
-## Firebase Setup
+Create a `.env` file with the Firebase configuration and configure the Gemini secret for the Cloud Function.
 
-1. Create a Firebase project
-2. Enable Authentication providers you need
-3. Create Cloud Firestore
-4. Create Firebase Storage
-5. Deploy the rules
+## Firebase setup
+
+1. Create a Firebase project.
+2. Enable the required Authentication providers.
+3. Create Firestore and Storage.
+4. Configure the Firebase environment variables.
+5. Deploy Firestore and Storage rules.
+6. Set the Gemini secret for the Cloud Function.
+7. Deploy the function.
 
 ```bash
 npx firebase-tools deploy --only firestore:rules,storage
-```
-
-6. Set the Gemini secret
-
-```bash
 npx firebase-tools functions:secrets:set GEMINI_API_KEY
-```
-
-7. Deploy the function
-
-```bash
 npx firebase-tools deploy --only functions
 ```
 
-8. Put the deployed function URL into `VITE_ANALYZE_ENDPOINT`
+## Demo
 
-## Scripts
+Video demo: https://drive.google.com/file/d/1UZj9mOtcpI2tLZfRnCrRIkIWg1TBLJU0/view?usp=sharing
 
-- `npm run dev` starts the Vite development server
-- `npm run build` creates the production build
-- `npm run preview` previews the production build
-- `npm run lint` runs ESLint on the React source
+## Disclaimer
 
+This is a software project for organizing and explaining medical reports. AI-generated explanations are not medical diagnoses or a replacement for professional medical advice.
